@@ -1,6 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi import FastAPI
 from database import get_connection
+from pydantic import BaseModel
+
+class SubscribeRequest(BaseModel):
+    name: str=None
+    email: str
 
 app = FastAPI()
 

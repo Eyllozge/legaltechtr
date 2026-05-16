@@ -42,6 +42,14 @@ def create_tables():
             startup_id INT REFERENCES startups(id)
         );
     """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS subscribers (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100),
+            email VARCHAR(100) NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
     
     conn.commit()
     cur.close()
