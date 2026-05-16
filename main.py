@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi import FastAPI
 from database import get_connection
 from pydantic import BaseModel
+from psycopg2 import errors
 
 class SubscribeRequest(BaseModel):
     name: str=None
@@ -73,3 +74,33 @@ def get_company(company_id: int):
         "website": row[4],
         "founded_year": row[5]
     }
+    
+@app.post("/subscribe")
+def subscribe(request: SubscribeRequest):
+    conn = get_connection()
+    cur = conn.cursor()
+
+     
+    try:
+        cur.execute("""
+            INSERT INTO subscribers (name, email)
+            VALUES (%s, %s)
+            RETURNING id
+        """, (request.name, request.email))
+        new_id = cur.fetchone()[0]
+        conn.commit()
+    except errors.UniqueViolation:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı")
+    finally:
+        cur.close()
+        conn.close()
+    
+    
+    return {
+        "id": new_id,
+        "name": request.name,
+        "email": request.email
+    }
+    
+    
