@@ -3,12 +3,17 @@ from fastapi import FastAPI
 from database import get_connection
 from pydantic import BaseModel
 from psycopg2 import errors
+from fastapi.staticfiles import StaticFiles
+
+
 
 class SubscribeRequest(BaseModel):
     name: str=None
     email: str
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/companies")
 def get_companies(category: str = None):
