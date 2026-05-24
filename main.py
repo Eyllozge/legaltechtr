@@ -4,6 +4,7 @@ from database import get_connection
 from pydantic import BaseModel
 from psycopg2 import errors
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -12,6 +13,13 @@ class SubscribeRequest(BaseModel):
     email: str
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
